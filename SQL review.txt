@@ -1,0 +1,146 @@
+show columns:
+SHOW COLUMNS FROM customers
+
+WILDCARD:
+SELECT *
+
+LIMIT first 5:
+SELECT id FROM customers LIMIT 5
+
+LIMIT start with 6 and 10 down
+SELECT id FROM customers LIMIT 5,10
+
+ORDER BY:
+SELECT id FROM customers ORDER BY name
+
+ORDER BY state, then name:
+SELECT state, city, name FROM customers ORDER BY state, name DESC<- optional
+
+Customer with highest ID number:
+SELECT name, id FROM customer ORDER BY id DESC LIMIT 1
+order the ids from highest to lowest then return the first id
+
+filter with WHERE:
+SELECT  id, name FROM  customers WHERE id!=54 (all results not 54) id < 8, id <=1
+							     WHERE id	BETWEEN 25 AND 30
+   						     WHERE state = 'CA' OR state= 'NY' (just one or the other need to be true)
+    (id is 1 or 2 and live in NY)                WHERE (id = 1 OR id=2) AND state='NY'
+
+to use a bunch of OR statements use IN:
+SELECT name, state FROM customers WHERE state IN ('CA','OH','NY') ORDER BY state
+SELECT name, state FROM customers WHERE state NOT IN ('CA','OH','NY') ORDER BY state
+
+%= many characters   _=1 character
+anything start with "new":
+SELECT name FROM items WHERE name LIKE 'new%'
+anything with "computer" somewhere:
+SELECT name FROM items WHERE name LIKE '%computer%'
+starts with h ends with d:
+SELECT name FROM items WHERE name LIKE 'h%d'
+ends with a SINGLE CHARACTER boxes of frogs:
+SELECT name FROM items WHERE name LIKE '_ boxes of frogs'
+
+REGEX contains the word new:
+WHERE name REGEXP 'new'
+WHERE name REGEXP '.boxes' <== any single character that comes before boxes
+WHERE name REGEXP 'gold|car' <== gold OR car (as long as it includes gold or car somewhere)
+WHERE name REGEXP '[12345] boxes of frogs'  <==1 2 3 4 5 boxes of frogs
+WHERE name REGEXP '[1-5] boxes of frogs' 
+WHERE name REGEXP '[12345] boxes of frogs <== any number besides those number
+
+custom columns with CONCAT():
+SELECT CONCAT (city, ',' , state) FROM customers
+Brooklyn, NY <--
+Toledo, OH    <--
+give it a name with AS:
+SELECT CONCAT (city, ',' , state) AS new_address FROM customers
+
+column as new price with discount -1:
+SELECT name, cost, cost-1 AS sale_price FROM items  
+SELECT name, cost, cost*1 AS sale_price FROM items  
+SELECT name, cost, cost+1 AS sale_price FROM items  etc
+
+FUNCTIONS:
+UPPER () make all capital:
+SELECT name, UPPER(name) FROM customers 
+
+SQRT() square root:
+SELECT cost, SQRT(cost) FROM customers
+
+AVG() average of a column:
+SELECT AVG(cost) FROM customers
+
+SUM() sum of a column:
+SELECT SUM(bids) FROM items
+
+Aggregate functions: 
+count all horizontal rows:
+count number of items with for seller with id=6
+SELECT COUNT(name) FROM items WHERE seller_id=6 
+               above: COUNT(doesn't matter what it is)
+
+average cost of items from seller 6:
+SELECT AVG(cost) FROM items WHERE seller_id=6
+
+SELECT COUNT(*) AS item_count, <-- count all items
+MAX(cost) AS max, <-- highest price
+AVG(cost) AS avg, <-- average price
+FROM items 
+WHERE seller_id=12 
+
+
+GROUP BY each seller id:
+SELECT seller_id, COUNT(*) AS item_count FROM items GROUP BY seller_id
+
+Find all seller_id that has 3 or more items to sell:
+SELECT seller_id, COUNT(*) AS item_count FROM items GROUP BY seller_id HAVING COUNT(*)>=3
+
+now order by highest to lowest:
+SELECT seller_id, COUNT(*) AS item_count FROM items GROUP BY seller_id HAVING COUNT(*)>=3  ORDER BY item_count DESC
+
+Subqueries (query inside of another query)
+find items above average:
+SELECT AVG(cost) FROM items = 463 <--copy and paste
+
+SELECT name, cost FROM items WHERE cost > (
+
+SELECT AVG(cost) FROM items 
+
+) ORDER BY cost DESC 
+
+better example: find seller with cheapest frog:
+SELECT seller_id FROM items WHERE name LIKE '%boxes of frogs' <- find sellers that sells frogs
+
+SELECT name, MIN(cost) FROM items WHERE name LIKE '%boxes of frogs' AND seller_id IN (
+
+SELECT seller_id FROM items WHERE name LIKE '%boxes of frogs' ) <--find sellers that sells the cheapest frogs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
